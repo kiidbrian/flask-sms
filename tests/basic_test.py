@@ -1,5 +1,5 @@
 import unittest
-from app.models import User
+from ..app.models import User
 import requests
 
 class BasicTestCase(unittest.TestCase):
