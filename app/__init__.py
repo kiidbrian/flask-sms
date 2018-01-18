@@ -7,20 +7,23 @@ import os
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
-# login_manager.login_view = 'auth.login'
-
-app = Flask(__name__)
-
-CORS(app)
-env = os.environ.get('FLASK_ENV', 'dev')
-app.config.from_object(config[env])
+login_manager.login_view = 'auth.login'
 
 db = SQLAlchemy(app)
-db.create_all()
-db.session.commit()
 
-login_manager.init_app(app)
+def create_app(config_name):
+  app = Flask(__name__)
+  app.config.from_object(config[config_name])
+  config[config_name].init_app(app)
 
-# import and register blueprints
-from app.auth import auth as auth_blueprint
-app.register_blueprint(auth_blueprint)
+  CORS(app)
+
+  login_manager.init_app(app)
+  db.init_app(app)
+
+  # import and register blueprints
+  from app.auth import auth as auth_blueprint
+
+  app.register_blueprint(auth_blueprint)
+
+  return app
